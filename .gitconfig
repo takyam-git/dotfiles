@@ -1,0 +1,40 @@
+[alias]
+  co = checkout
+  st = status
+  ci = commit -a
+  di = diff
+  dic = diff --cached
+  dig = diff -G
+  digc = diff --cached -G
+  dinp = diff --no-prefix -U10000
+  br = branch
+  addp = add -p
+  logs = log --graph --color --decorate --stat
+  logshort = log --graph --color --pretty=short
+  reh = !git status && echo 'RESET HEAD --hard してもほんとにいいの？しぬよ？[Y/n]' && read ans && test $ans = "Y" && git reset HEAD --hard;
+  cfd = clean -fd
+  delete-merged-branches = !git branch --merged | grep -v \\* | grep -v develop | grep -v master | xargs -I % git branch -d %
+  co-history = "!git --no-pager reflog | awk '$3 == \"checkout:\" && /moving from/ {print $8}'" | grep -vE '(develop|master)' | uniq | head -n 20 | peco | xargs git co
+  push-force = push --force-with-lease
+  cherry-pick-unmerged = !git log --merges --oneline develop | head -n 100 | grep -vE (git log --oneline | grep 'Merge pull request' | head -n 100 | awk -F ' ' '{print $5}' | tr '\n' '|' | sed 's/|$//') | grep -vE 'Merge tag|hotfix/|release/' | peco | awk '{print $1}' | xargs git cherry-pick -m 1
+[ui]
+  autocolor = true
+[color]
+  ui = auto
+[core]
+  autocrlf = input
+  whitespace = cr-at-eol
+  symlinks = false
+[push]
+  default = tracking
+[pager]
+  log = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
+  show = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
+  diff = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
+[diff]
+  compactionHeuristic = true
+[user]
+  name = Takayuki Yamaguchi
+  email = yamaguchi@openlogi.com
+[interactive]
+  diffFilter = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight
