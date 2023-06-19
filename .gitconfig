@@ -13,10 +13,12 @@
   logshort = log --graph --color --pretty=short
   reh = !git status && echo 'RESET HEAD --hard してもほんとにいいの？しぬよ？[Y/n]' && read ans && test $ans = "Y" && git reset HEAD --hard;
   cfd = clean -fd
-  delete-merged-branches = !git branch --merged | grep -v \\* | grep -v develop | grep -v master | xargs -I % git branch -d %
-  co-history = "!git --no-pager reflog | awk '$3 == \"checkout:\" && /moving from/ {print $8}'" | grep -vE '(develop|master)' | uniq | head -n 20 | peco | xargs git co
+  delete-merged-branches = !git branch --merged | grep -v \\* | grep -v development | grep -v master | grep -v main | xargs -I % git branch -d %
+  co-history = "!git --no-pager reflog | awk '$3 == \"checkout:\" && /moving from/ {print $8}'" | grep -vE '(master|main)' | head -n 50 | awk '!x[$0]++' | peco | xargs git co
   push-force = push --force-with-lease
-  cherry-pick-unmerged = !git log --merges --oneline develop | head -n 100 | grep -vE (git log --oneline | grep 'Merge pull request' | head -n 100 | awk -F ' ' '{print $5}' | tr '\n' '|' | sed 's/|$//') | grep -vE 'Merge tag|hotfix/|release/' | peco | awk '{print $1}' | xargs git cherry-pick -m 1
+  co-d = checkout development
+  co-m = checkout master
+  cherry-pick-unmerged = !git log --merges --oneline development | head -n 100 | grep -vE $(git log --oneline | grep 'Merge pull request' | grep -v 'Revert \"Merge pull request' | head -n 100 | awk -F ' ' '{print $5}' | tr '\n' '|' | sed 's/|$//') | grep -vE 'Merge tag|hotfix/|release/' | peco | awk '{print $1}' | xargs git cherry-pick -m 1
 [ui]
   autocolor = true
 [color]
@@ -33,8 +35,11 @@
   diff = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
 [diff]
   compactionHeuristic = true
-[user]
-  name = Takayuki Yamaguchi
-  email = yamaguchi@openlogi.com
+  algorithm = histogram
+  colorMoved = dimmed-zebra
 [interactive]
   diffFilter = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight
+[init]
+  defaultBranch = main
+[push]
+  autoSetupRemote = true
